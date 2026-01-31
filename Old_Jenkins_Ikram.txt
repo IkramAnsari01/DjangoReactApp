@@ -1,38 +1,34 @@
-@Library("Git-Libraries") _
-
 pipeline {
-    
     agent {label "Agent1"}
 
     stages {
         stage('Code') {
             steps {
-                script{
-                clone("https://github.com/IkramAnsari01/DjangoReactApp","main")
-                }
-                
+                 echo 'Code Cloning From Git'
+                git url:"https://github.com/IkramAnsari01/DjangoReactApp",branch: "main"
+                echo 'Code Cloning Successful'
             }
         }
         
         stage('Build') {
             steps {
-                script{
-                buildImage("notes-app","latest")
-                }
+                echo 'Building the code'
+                echo 'Creating Image'
+                sh "docker build -t notes-app:latest ."
+                echo 'Image Built'
             }
         }
         stage('DockerHub Push'){
             steps{
-                
                 echo ' Pushing build Image to Docker Hub'
                 withCredentials([usernamePassword(
                         'credentialsId':"DockerHubCred",
                         passwordVariable: "DocPass",
                         usernameVariable: "DocUser")]){
-                            script{
-                                dockerPush("DocUser", "DocUser", "notes-app","latest")
-                            }
-                         }
+                            sh "docker login -u ${env.DocUser} -p ${env.DocPass}" 
+                            sh " docker image tag notes-app:latest ${env.DocUser}/notes-app:latest"
+                            sh "docker push ${env.DocUser}/notes-app:latest"
+                        }
             }
         }
         
