@@ -1,7 +1,6 @@
 @Library("Git-Libraries") _
 
-pipeline {
-    
+pipeline { 
     agent {label "Agent1"}
 
     stages {
