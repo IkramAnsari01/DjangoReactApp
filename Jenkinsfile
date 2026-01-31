@@ -6,6 +6,7 @@ pipeline {
 
     stages {
         stage('Code') {
+            
             steps {
                 script{
                 clone("https://github.com/IkramAnsari01/DjangoReactApp","main")
